@@ -1,0 +1,25 @@
+<?php
+session_start();
+
+$role = $_SESSION['role'] ?? 'guest';
+$type = $_GET['type'] ?? 'us';
+
+$allowedTypesByRole = [
+    'us' => ['us'],
+    'ad' => ['us', 'ad'],
+];
+
+if (
+    !isset($allowedTypesByRole[$role]) ||
+    !in_array($type, $allowedTypesByRole[$role], true)
+) {
+    http_response_code(403);
+    echo "Access Denied";
+    exit;
+}
+
+if ($type === 'ad') {
+    include __DIR__ . '/reports/admin_report.php';
+} else {
+    include __DIR__ . '/reports/user_report.php';
+}
